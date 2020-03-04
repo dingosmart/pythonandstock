@@ -1,0 +1,50 @@
+# http://liyangbit.com/machinelearning/stock-analysis-with-pandas-sklearn/
+import pandas as pd
+import pandas.plotting as pd1
+import datetime
+import pandas_datareader.data as web
+from pandas import Series, DataFrame
+import matplotlib.pyplot as plt
+
+pd.set_option('display.max_rows', 2500)  # 最大行数
+pd.set_option('display.max_columns', 2500)  # 最大列数
+pd.set_option('display.width', 4000)  # 页面宽度
+
+start = datetime.datetime(2010, 1, 1)
+end = datetime.datetime(2017, 1, 11)
+
+dfcomp = web.DataReader(['AAPL', 'GE', 'GOOG', 'IBM', 'MSFT'], 'yahoo', start=start, end=end)['Adj Close']
+
+dfcomp.tail()
+print(dfcomp)
+
+# 相关性分析:竞争对手会互相影响吗？
+retscomp = dfcomp.pct_change()
+corr = retscomp.corr()
+plt.scatter(retscomp.AAPL, retscomp.GE)
+plt.xlabel('Returns AAPL')
+plt.ylabel('Returns GE')
+plt.show()
+
+# 散点图
+pd1.scatter_matrix(retscomp, diagonal='kde', figsize=(10, 10))
+plt.show()
+
+plt.imshow(corr, cmap='hot', interpolation='none')
+plt.colorbar()
+
+# 相关性热点图
+plt.xticks(range(len(corr)), corr.columns)
+plt.yticks(range(len(corr)), corr.columns)
+plt.show()
+
+# 回报率和风险
+plt.scatter(retscomp.mean(), retscomp.std())
+plt.xlabel('Expected returns')
+plt.ylabel('Risk')
+for label, x, y in zip(retscomp.columns, retscomp.mean(), retscomp.std()):
+    plt.annotate(label, xy=(x, y), xytext=(20, -20),
+                 textcoords='offset points', ha='right', va='bottom',
+                 bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=0.5),
+                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0'))
+plt.show()

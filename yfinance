@@ -1,0 +1,15 @@
+
+# get data and print the line
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# Get the data for the stock Apple by specifying the stock ticker, start date, and end date
+data = yf.download('AAPL', '2016-01-01', '2020-02-02')
+data1 = yf.download('HDFCBANK.NS', '2016-01-01', '2020-02-02')
+
+# Plot the close prices
+data.Close.plot()
+data1.Close.plot()
+
+plt.show()
+
